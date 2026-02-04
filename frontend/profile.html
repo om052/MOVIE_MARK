@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - MovieMark</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: rgba(2, 6, 23, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-buttons a {
+            text-decoration: none;
+            color: #e2e8f0;
+            margin-left: 20px;
+            padding: 10px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-buttons a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #60a5fa;
+            color: #60a5fa;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 40px;
+            background: rgba(2, 6, 23, 0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .profile-info {
+            margin-bottom: 30px;
+        }
+
+        .info-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-group:last-child {
+            border-bottom: none;
+        }
+
+        .info-group label {
+            font-weight: 600;
+            color: #94a3b8;
+            min-width: 120px;
+        }
+
+        .info-group span {
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            background: rgba(30, 41, 59, 0.8);
+            color: #e2e8f0;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+            background: rgba(30, 41, 59, 0.9);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #60a5fa, #a78bfa);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 15px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(96, 165, 250, 0.3);
+        }
+
+        button:nth-child(2) {
+            background: rgba(239, 68, 68, 0.8);
+        }
+
+        button:nth-child(2):hover {
+            background: #ef4444;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        #preview, #viewPhoto {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        #preview:hover, #viewPhoto:hover {
+            border-color: #60a5fa;
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-buttons a {
+                margin: 5px;
+            }
+
+            .info-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>MovieMark</h2>
+        <div class="nav-buttons">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="scripts.html">Scripts</a>
+            <a href="shortfilms.html">Short Films</a>
+            <a href="logout.html">Logout</a>
+        </div>
+    </header>
+    <div class="container">
+        <h1>Profile</h1>
+        <div id="viewMode">
+            <div class="profile-info">
+                <div class="info-group">
+                    <label>Name:</label>
+                    <span id="viewName"></span>
+                </div>
+                <div class="info-group">
+                    <label>Email:</label>
+                    <span id="viewEmail"></span>
+                </div>
+                <div class="info-group">
+                    <label>Role:</label>
+                    <span id="viewRole"></span>
+                </div>
+                <div class="info-group">
+                    <label>Bio:</label>
+                    <span id="viewBio"></span>
+                </div>
+                <div class="info-group">
+                    <label>Skills:</label>
+                    <span id="viewSkills"></span>
+                </div>
+                <div class="info-group">
+                    <label>Instagram:</label>
+                    <span id="viewInstagram"></span>
+                </div>
+                <div class="info-group">
+                    <label>YouTube:</label>
+                    <span id="viewYoutube"></span>
+                </div>
+                <div class="info-group">
+                    <label>Photo:</label>
+                    <img id="viewPhoto" src="" alt="Profile Photo" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+                </div>
+            </div>
+            <button type="button" onclick="enableEdit()">Edit Profile</button>
+        </div>
+        <form id="profileForm" style="display: none;">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="role">Role:</label>
+                <input type="text" id="role" placeholder="e.g., Director, Writer">
+            </div>
+            <div class="form-group">
+                <label for="bio">Bio:</label>
+                <textarea id="bio" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="skills">Skills:</label>
+                <input type="text" id="skills" placeholder="e.g., Editing, Cinematography">
+            </div>
+            <div class="form-group">
+                <label for="instagram">Instagram:</label>
+                <input type="text" id="instagram" placeholder="@username">
+            </div>
+            <div class="form-group">
+                <label for="youtube">YouTube:</label>
+                <input type="text" id="youtube" placeholder="Channel URL">
+            </div>
+            <div class="form-group">
+                <label for="photo">Photo:</label>
+                <input type="file" id="photo" accept="image/*">
+                <img id="preview" src="" alt="Preview">
+            </div>
+            <button type="button" onclick="saveProfile()">Save Profile</button>
+            <button type="button" onclick="cancelEdit()">Cancel</button>
+        </form>
+    </div>
+    <script>
+        const token = localStorage.getItem("token");
+        if (!token) {
+            window.location.href = "login.html";
+        }
+
+        let userEmail = "";
+
+        // Load user data
+        fetch("http://localhost:3000/api/auth/me", {
+            headers: {
+                Authorization: "Bearer " + token
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            userEmail = data.email;
+            document.getElementById("email").value = userEmail;
+            loadProfile();
+        })
+        .catch(err => {
+            console.log(err);
+            window.location.href = "login.html";
+        });
+
+        // Load profile
+        async function loadProfile() {
+            try {
+                const res = await fetch(`http://localhost:3000/api/profile/${userEmail}`);
+                if (res.ok) {
+                    const profile = await res.json();
+                    // Populate form fields
+                    document.getElementById("name").value = profile.name || "";
+                    document.getElementById("role").value = profile.role || "";
+                    document.getElementById("bio").value = profile.bio || "";
+                    document.getElementById("skills").value = profile.skills || "";
+                    document.getElementById("instagram").value = profile.instagram || "";
+                    document.getElementById("youtube").value = profile.youtube || "";
+                    if (profile.photo) {
+                        document.getElementById("preview").src = profile.photo;
+                    }
+                    // Populate view mode
+                    document.getElementById("viewName").textContent = profile.name || "Not set";
+                    document.getElementById("viewEmail").textContent = profile.email || userEmail;
+                    document.getElementById("viewRole").textContent = profile.role || "Not set";
+                    document.getElementById("viewBio").textContent = profile.bio || "Not set";
+                    document.getElementById("viewSkills").textContent = profile.skills || "Not set";
+                    document.getElementById("viewInstagram").textContent = profile.instagram || "Not set";
+                    document.getElementById("viewYoutube").textContent = profile.youtube || "Not set";
+                    console.log("Profile photo:", profile.photo);
+                    if (profile.photo && profile.photo !== "") {
+                        document.getElementById("viewPhoto").src = profile.photo;
+                        console.log("Set viewPhoto src to:", profile.photo.substring(0, 50) + "...");
+                    } else {
+                        document.getElementById("viewPhoto").src = "";
+                        console.log("No photo to set");
+                    }
+                } else {
+                    // If no profile exists, show default in view mode
+                    document.getElementById("viewName").textContent = "Not set";
+                    document.getElementById("viewEmail").textContent = userEmail;
+                    document.getElementById("viewRole").textContent = "Not set";
+                    document.getElementById("viewBio").textContent = "Not set";
+                    document.getElementById("viewSkills").textContent = "Not set";
+                    document.getElementById("viewInstagram").textContent = "Not set";
+                    document.getElementById("viewYoutube").textContent = "Not set";
+                }
+            } catch (err) {
+                console.log("Profile not found or error loading:", err);
+            }
+        }
+
+        // Enable edit mode
+        function enableEdit() {
+            document.getElementById("viewMode").style.display = "none";
+            document.getElementById("profileForm").style.display = "block";
+        }
+
+        // Cancel edit mode
+        function cancelEdit() {
+            document.getElementById("profileForm").style.display = "none";
+            document.getElementById("viewMode").style.display = "block";
+        }
+
+        // Photo preview
+        document.getElementById("photo").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById("preview").src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Save profile
+        async function saveProfile() {
+            const data = {
+                name: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                role: document.getElementById("role").value,
+                bio: document.getElementById("bio").value,
+                skills: document.getElementById("skills").value,
+                instagram: document.getElementById("instagram").value,
+                youtube: document.getElementById("youtube").value,
+                photo: document.getElementById("preview").src
+            };
+
+            console.log("Sending data:", data);
+
+            try {
+                const res = await fetch("http://localhost:3000/api/profile/save", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                console.log("Response status:", res.status);
+                const result = await res.json();
+                console.log("Response data:", result);
+
+                if (res.ok) {
+                    alert(result.message || "Profile saved successfully!");
+                    // Reload profile and switch to view mode
+                    loadProfile();
+                    cancelEdit();
+                } else {
+                    alert("Error: " + (result.message || "Unknown error"));
+                }
+            } catch (err) {
+                console.log("Fetch error:", err);
+                alert("Network error: " + err.message);
+            }
+        }
+    </script>
+</body>
+</html>

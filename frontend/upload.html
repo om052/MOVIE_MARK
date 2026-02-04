@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Your Project - MovieMark</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00d4ff, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .back-btn {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            color: #00d4ff;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        /* Page Title */
+        .page-title {
+            text-align: center;
+            padding: 120px 2rem 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .title-main {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ffffff, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: textReveal 2s ease-out;
+            position: relative;
+        }
+
+        .title-main::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+            animation: shine 3s ease-in-out infinite;
+        }
+
+        .title-subtitle {
+            font-size: 1.5rem;
+            color: #cbd5e1;
+            animation: fadeInUp 1s ease-out 0.5s both;
+        }
+
+        /* Upload Type Selector */
+        .upload-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto 4rem;
+            padding: 0 2rem;
+        }
+
+        .upload-type-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-type-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .upload-type-card:hover::before,
+        .upload-type-card.active::before {
+            left: 100%;
+        }
+
+        .upload-type-card:hover,
+        .upload-type-card.active {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.5);
+        }
+
+        .upload-type-card.active {
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .upload-type-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ffd700;
+        }
+
+        .upload-type-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .upload-type-desc {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        /* Upload Form */
+        .upload-form {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #ffd700;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Drag & Drop Upload */
+        .upload-zone {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .upload-zone i {
+            font-size: 3rem;
+            color: #ffd700;
+            margin-bottom: 1rem;
+        }
+
+        .upload-zone-text {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-zone-subtext {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        .file-preview {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .file-icon {
+            font-size: 2rem;
+            color: #ffd700;
+        }
+
+        .file-details h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .file-details p {
+            color: #cbd5e1;
+            font-size: 0.8rem;
+        }
+
+        .file-remove {
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Team Settings */
+        .team-settings {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .team-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #ffd700;
+        }
+
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .role-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .role-checkbox:hover {
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .role-checkbox input[type="checkbox"] {
+            display: none;
+        }
+
+        .role-checkbox input[type="checkbox"]:checked + .checkmark {
+            background: #ffd700;
+            border-color: #ffd700;
+        }
+
+        .role-checkbox input[type="checkbox"]:checked + .checkmark::after {
+            display: block;
+        }
+
+        .checkmark {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .checkmark::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 6px;
+            width: 6px;
+            height: 10px;
+            border: solid #0f172a;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+            display: none;
+        }
+
+        .team-size {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .team-size label {
+            font-weight: 500;
+        }
+
+        .team-size input {
+            width: 80px;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            color: #ffffff;
+        }
+
+        /* Submit Button */
+        .submit-section {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            color: #0f172a;
+            border: none;
+            padding: 1.2rem 3rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.5);
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn.loading {
+            pointer-events: none;
+        }
+
+        .submit-btn.loading::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 2px solid #0f172a;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 1rem;
+        }
+
+        /* Preview Panel */
+        .preview-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .preview-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #ffd700;
+        }
+
+        .preview-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .preview-image {
+            height: 200px;
+            background: linear-gradient(45deg, #1e293b, #0f172a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .preview-image i {
+            font-size: 3rem;
+            color: rgba(255, 215, 0, 0.3);
+        }
+
+        .preview-content {
+            padding: 1.5rem;
+        }
+
+        .preview-project-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .preview-genre {
+            color: #ffd700;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .preview-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .preview-creator {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        /* Footer */
+        footer {
+            background: #0f172a;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #ffd700;
+        }
+
+        .footer-text {
+            color: #64748b;
+        }
+
+        /* Animations */
+        @keyframes textReveal {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shine {
+            0%, 100% { left: -100%; }
+            50% { left: 100%; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Floating Particles */
+        .particle {
+            position: absolute;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .particle:nth-child(1) { width: 10px; height: 10px; top: 20%; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 15px; height: 15px; top: 60%; left: 80%; animation-delay: 2s; }
+        .particle:nth-child(3) { width: 8px; height: 8px; top: 40%; left: 60%; animation-delay: 4s; }
+        .particle:nth-child(4) { width: 12px; height: 12px; top: 80%; left: 20%; animation-delay: 1s; }
+        .particle:nth-child(5) { width: 6px; height: 6px; top: 30%; left: 90%; animation-delay: 3s; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .preview-panel {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                padding: 100px 1rem 40px;
+            }
+
+            .title-main {
+                font-size: 2.5rem;
+            }
+
+            .title-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .upload-selector {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
+
+            .main-content {
+                padding: 0 1rem 2rem;
+            }
+
+            .upload-form {
+                padding: 1.5rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Success/Error Messages */
+        .message {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .message.success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid #22c55e;
+            color: #22c55e;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.2);
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: #ffffff;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background: #ffd700;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Particles -->
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-left">
+            <a href="dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+            <div class="logo">MovieMark</div>
+        </div>
+        <div class="user-avatar" id="userAvatar">U</div>
+    </header>
+
+    <!-- Page Title -->
+    <section class="page-title">
+        <h1 class="title-main">Submit Your Project</h1>
+        <p class="title-subtitle">Turn your story into a film</p>
+    </section>
+
+    <!-- Upload Type Selector -->
+    <section class="upload-selector">
+        <div class="upload-type-card active" data-type="script">
+            <div class="upload-type-icon"><i class="fas fa-file-alt"></i></div>
+            <h3 class="upload-type-title">Script</h3>
+            <p class="upload-type-desc">Upload your screenplay in PDF or DOC format</p>
+        </div>
+        <div class="upload-type-card" data-type="shortfilm">
+            <div class="upload-type-icon"><i class="fas fa-video"></i></div>
+            <h3 class="upload-type-title">Short Film</h3>
+            <p class="upload-type-desc">Share your completed short film with the community</p>
+        </div>
+        <div class="upload-type-card" data-type="idea">
+            <div class="upload-type-icon"><i class="fas fa-lightbulb"></i></div>
+            <h3 class="upload-type-title">Idea / Concept</h3>
+            <p class="upload-type-desc">Pitch your creative concept and find collaborators</p>
+        </div>
+        <div class="upload-type-card" data-type="project">
+            <div class="upload-type-icon"><i class="fas fa-film"></i></div>
+            <h3 class="upload-type-title">Full Project</h3>
+            <p class="upload-type-desc">Launch a complete film production project</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Upload Form -->
+        <div class="upload-form">
+            <!-- Success/Error Messages -->
+            <div class="message success" id="successMessage">Project submitted successfully! It will be reviewed by our team.</div>
+            <div class="message error" id="errorMessage">An error occurred. Please try again.</div>
+
+            <!-- Script Upload Form -->
+            <div class="form-section active" id="scriptForm">
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-input" id="scriptTitle" placeholder="Enter script title" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Genre</label>
+                        <select class="form-select" id="scriptGenre" required>
+                            <option value="">Select genre</option>
+                            <option value="Action">Action</option>
+                            <option value="Adventure">Adventure</option>
+                            <option value="Comedy">Comedy</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Horror">Horror</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Sci-Fi">Sci-Fi</option>
+                            <option value="Thriller">Thriller</option>
+                            <option value="Documentary">Documentary</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Language</label>
+                        <input type="text" class="form-input" id="scriptLanguage" placeholder="e.g., English" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="scriptDescription" placeholder="Describe your script..." required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Tags</label>
+                        <input type="text" class="form-input" id="scriptTags" placeholder="e.g., thriller, mystery, suspense">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Visibility</label>
+                        <select class="form-select" id="scriptVisibility" required>
+                            <option value="Public">Public</option>
+                            <option value="Private">Private</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Script File</label>
+                    <div class="upload-zone" id="scriptUploadZone">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <div class="upload-zone-text">Drag & drop your script file here</div>
+                        <div class="upload-zone-subtext">Supports PDF, DOC, DOCX (Max 10MB)</div>
+                        <input type="file" id="scriptFile" accept=".pdf,.doc,.docx" style="display: none;">
+                    </div>
+                    <div class="progress-bar" id="scriptProgressBar">
+                        <div class="progress-fill" id="scriptProgressFill"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        Open for Collaboration
+                        <input type="checkbox" id="scriptCollaboration" checked>
+                        <span class="toggle-switch">
+                            <span class="toggle-slider"></span>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="team-settings" id="scriptTeamSettings">
+                    <h4 class="team-title">Team Requirements</h4>
+                    <div class="roles-grid">
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Actor">
+                            <span class="checkmark"></span>
+                            Actor
+                        </label>
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Director">
+                            <span class="checkmark"></span>
+                            Director
+                        </label>
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Editor">
+                            <span class="checkmark"></span>
+                            Editor
+                        </label>
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Cinematographer">
+                            <span class="checkmark"></span>
+                            Cinematographer
+                        </label>
+                    </div>
+                    <div class="team-size">
+                        <label>Team Size:</label>
+                        <input type="number" id="scriptTeamSize" min="1" max="20" value="5">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Short Film Upload Form -->
+            <div class="form-section" id="shortfilmForm">
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-input" id="filmTitle" placeholder="Enter film title" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Genre</label>
+                        <select class="form-select" id="filmGenre" required>
+                            <option value="">Select genre</option>
+                            <option value="Action">Action</option>
+                            <option value="Adventure">Adventure</option>
+                            <option value="Comedy">Comedy</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Horror">Horror</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Sci-Fi">Sci-Fi</option>
+                            <option value="Thriller">Thriller</option>
+                            <option value="Documentary">Documentary</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Language</label>
+                        <input type="text" class="form-input" id="filmLanguage" placeholder="e.g., English" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="filmDescription" placeholder="Describe your film..." required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Tags</label>
+                        <input type="text" class="form-input" id="filmTags" placeholder="e.g., thriller, mystery, suspense">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Visibility</label>
+                        <select class="form-select" id="filmVisibility" required>
+                            <option value="Public">Public</option>
+                            <option value="Private">Private</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Video File</label>
+                    <div class="upload-zone" id="filmUploadZone">
+                        <i class="fas fa-video"></i>
+                        <div class="upload-zone-text">Drag & drop your video file here</div>
+                        <div class="upload-zone-subtext">Supports MP4, MOV, AVI (Max 500MB)</div>
+                        <input type="file" id="filmFile" accept=".mp4,.mov,.avi" style="display: none;">
+                    </div>
+                    <div class="progress-bar" id="filmProgressBar">
+                        <div class="progress-fill" id="filmProgressFill"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Poster Image</label>
+                        <div class="upload-zone" id="posterUploadZone">
+                            <i class="fas fa-image"></i>
+                            <div class="upload-zone-text">Drag & drop poster image</div>
+                            <div class="upload-zone-subtext">JPG, PNG (Max 5MB)</div>
+                            <input type="file" id="posterFile" accept=".jpg,.jpeg,.png" style="display: none;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Duration (minutes)</label>
+                        <input type="number" class="form-input" id="filmDuration" min="1" max="60" placeholder="e.g., 15">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Trailer Link (optional)</label>
+                    <input type="url" class="form-input" id="filmTrailer" placeholder="https://youtube.com/...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        Open for Collaboration
+                        <input type="checkbox" id="filmCollaboration" checked>
+                        <span class="toggle-switch">
+                            <span class="toggle-slider"></span>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="team-settings" id="filmTeamSettings">
+                    <h4 class="team-title">Team Requirements</h4>
+                    <div class="roles-grid">
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Actor">
+                            <span class="checkmark"></span>
+                            Actor
+                        </label>
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Director">
+                            <span class="checkmark"></span>
+                            Director
+                        </label>
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Editor">
+                            <span class="checkmark"></span>
+                            Editor
+                        </label>
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Cinematographer">
+                            <span class="checkmark"></span>
+                            Cinematographer
+                        </label>
+                    </div>
+                    <div class="team-size">
+                        <label>Team Size:</label>
+                        <input type="number" id="filmTeamSize" min="1" max="20" value="5">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Idea Upload Form -->
+            <div class="form-section" id="ideaForm">
+                <div class="form-group">
+                    <label class="form-label">Title</label>
+                    <input type="text" class="form-input" id="ideaTitle" placeholder="Enter idea title" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Genre</label>
+                        <select class="form-select" id="ideaGenre" required>
+                            <option value="">Select genre</option>
+                            <option value="Action">Action</option>
+                            <option value="Adventure">Adventure</option>
+                            <option value="Comedy">Comedy</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Horror">Horror</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Sci-Fi">Sci-Fi</option>
+                            <option value="Thriller">Thriller</option>
+                            <option value="Documentary">Documentary</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Language</label>
+                        <input type="text" class="form-input" id="ideaLanguage" placeholder="e.g., English" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Concept Description</label>
+                    <textarea class="form-textarea" id="ideaDescription" placeholder="Describe your creative concept in detail..." required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Tags</label>
+                        <input type="text" class="form-input" id="ideaTags" placeholder="e.g., thriller, mystery, suspense">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Visibility</label>
+                        <select class="form-select" id="ideaVisibility" required>
+                            <option value="Public">Public</option>
+                            <option value="Private">Private</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Concept Images (optional)</label>
+                    <div class="upload-zone" id="ideaUploadZone">
+                        <i class="fas fa-images"></i>
+                        <div class="upload-zone-text">Drag & drop concept images here</div>
+                        <div class="upload-zone-subtext">JPG, PNG (Max 5MB each)</div>
+                        <input type="file" id="ideaFiles" accept=".jpg,.jpeg,.png" multiple style="display: none;">
+                    </div>
+                    <div class="progress-bar" id="ideaProgressBar">
+                        <div class="progress-fill" id="ideaProgressFill"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        Open for Collaboration
+                        <input type="checkbox" id="ideaCollaboration" checked>
+                        <span class="toggle-switch">
+                            <span class="toggle-slider"></span>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="team-settings" id="ideaTeamSettings">
+                    <h4 class="team-title">Team Requirements</h4>
+                    <div class="roles-grid">
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Writer">
+                            <span class="checkmark"></span>
+                            Writer
+                        </label>
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Director">
+                            <span class="checkmark"></span>
+                            Director
+                        </label>
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Producer">
+                            <span class="checkmark"></span>
+                            Producer
+                        </label>
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Cinematographer">
+                            <span class="checkmark"></span>
+                            Cinematographer
+                        </label>
+                    </div>
+                    <div class="team-size">
+                        <label>Team Size:</label>
+                        <input type="number" id="ideaTeamSize" min="1" max="20" value="5">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Upload Form -->
+            <div class="form-section" id="projectForm">
+                <div class="form-group">
+                    <label class="form-label">Project Title</label>
+                    <input type="text" class="form-input" id="projectTitle" placeholder="Enter project title" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Genre</label>
+                        <select class="form-select" id="projectGenre" required>
+                            <option value="">Select genre</option>
+                            <option value="Action">Action</option>
+                            <option value="Adventure">Adventure</option>
+                            <option value="Comedy">Comedy</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Horror">Horror</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Sci-Fi">Sci-Fi</option>
+                            <option value="Thriller">Thriller</option>
+                            <option value="Documentary">Documentary</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="projectCategory" required>
+                            <option value="">Select category</option>
+                            <option value="Short film">Short Film</option>
+                            <option value="Web series">Web Series</option>
+                            <option value="Feature film">Feature Film</option>
+                            <option value="Ad / Reel">Ad / Reel</option>
+                            <option value="Student film">Student Film</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Project Description</label>
+                    <textarea class="form-textarea" id="projectDescription" placeholder="Describe your project in detail..." required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Budget (optional)</label>
+                        <input type="number" class="form-input" id="projectBudget" placeholder="Estimated budget" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Deadline (optional)</label>
+                        <input type="date" class="form-input" id="projectDeadline">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Tags</label>
+                        <input type="text" class="form-input" id="projectTags" placeholder="e.g., thriller, mystery, suspense">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Visibility</label>
+                        <select class="form-select" id="projectVisibility" required>
+                            <option value="Public">Public</option>
+                            <option value="Private">Private</option>
+                            <option value="Team">Team Only</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Project Poster (optional)</label>
+                    <div class="upload-zone" id="projectUploadZone">
+                        <i class="fas fa-image"></i>
+                        <div class="upload-zone-text">Drag & drop project poster</div>
+                        <div class="upload-zone-subtext">JPG, PNG (Max 5MB)</div>
+                        <input type="file" id="projectPoster" accept=".jpg,.jpeg,.png" style="display: none;">
+                    </div>
+                    <div class="progress-bar" id="projectProgressBar">
+                        <div class="progress-fill" id="projectProgressFill"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        Open for Collaboration
+                        <input type="checkbox" id="projectCollaboration" checked>
+                        <span class="toggle-switch">
+                            <span class="toggle-slider"></span>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="team-settings" id="projectTeamSettings">
+                    <h4 class="team-title">Team Requirements</h4>
+                    <div class="roles-grid">
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Director">
+                            <span class="checkmark"></span>
+                            Director
+                        </label>
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Writer">
+                            <span class="checkmark"></span>
+                            Writer
+                        </label>
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Producer">
+                            <span class="checkmark"></span>
+                            Producer
+                        </label>
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Actor">
+                            <span class="checkmark"></span>
+                            Actor
+                        </label>
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Cinematographer">
+                            <span class="checkmark"></span>
+                            Cinematographer
+                        </label>
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Editor">
+                            <span class="checkmark"></span>
+                            Editor
+                        </label>
+                        <label class="role-checkbox">
+                            <input type="checkbox" value="Sound Designer">
+                            <span class="checkmark"></span>
+                            Sound Designer
+                        </label>
+                    </div>
+                    <div class="team-size">
+                        <label>Team Size:</label>
+                        <input type="number" id="projectTeamSize" min="1" max="50" value="10">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Section -->
+            <div class="submit-section">
+                <button type="button" class="submit-btn" id="submitBtn">
+                    <i class="fas fa-rocket"></i>
+                    Submit Project
+                </button>
+            </div>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="preview-panel">
+            <h3 class="preview-title">Live Preview</h3>
+            <div class="preview-card">
+                <div class="preview-image">
+                    <i class="fas fa-film"></i>
+                </div>
+                <div class="preview-content">
+                    <h4 class="preview-project-title" id="previewTitle">Your Project Title</h4>
+                    <p class="preview-genre" id="previewGenre">Genre</p>
+                    <p class="preview-status">Pending Review</p>
+                    <p class="preview-creator" id="previewCreator">By You</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="scripts.html">Scripts</a>
+            <a href="shortfilms.html">Short Films</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="contact.html">Contact</a>
+        </div>
+        <p class="footer-text">&copy; 2024 MovieMark. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const uploadTypeCards = document.querySelectorAll('.upload-type-card');
+        const formSections = document.querySelectorAll('.form-section');
+        const submitBtn = document.getElementById('submitBtn');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Upload zones
+        const scriptUploadZone = document.getElementById('scriptUploadZone');
+        const scriptFileInput = document.getElementById('scriptFile');
+        const filmUploadZone = document.getElementById('filmUploadZone');
+        const filmFileInput = document.getElementById('filmFile');
+        const posterUploadZone = document.getElementById('posterUploadZone');
+        const posterFileInput = document.getElementById('posterFile');
+        const ideaUploadZone = document.getElementById('ideaUploadZone');
+        const ideaFileInput = document.getElementById('ideaFiles');
+        const projectUploadZone = document.getElementById('projectUploadZone');
+        const projectPosterInput = document.getElementById('projectPoster');
+
+        // Progress bars
+        const scriptProgressBar = document.getElementById('scriptProgressBar');
+        const filmProgressBar = document.getElementById('filmProgressBar');
+        const ideaProgressBar = document.getElementById('ideaProgressBar');
+        const projectProgressBar = document.getElementById('projectProgressBar');
+
+        // Preview elements
+        const previewTitle = document.getElementById('previewTitle');
+        const previewGenre = document.getElementById('previewGenre');
+        const previewCreator = document.getElementById('previewCreator');
+
+        // Current upload type
+        let currentType = 'script';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupUploadTypeSwitching();
+            setupDragAndDrop();
+            setupFormValidation();
+            setupPreviewUpdates();
+            loadUserInfo();
+        });
+
+        // Upload type switching
+        function setupUploadTypeSwitching() {
+            uploadTypeCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const type = this.getAttribute('data-type');
+
+                    // Update active card
+                    uploadTypeCards.forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Show corresponding form
+                    formSections.forEach(section => section.classList.remove('active'));
+                    document.getElementById(type + 'Form').classList.add('active');
+
+                    currentType = type;
+                    updatePreview();
+                });
+            });
+        }
+
+        // Drag and drop functionality
+        function setupDragAndDrop() {
+            const uploadZones = [
+                { zone: scriptUploadZone, input: scriptFileInput, progress: scriptProgressBar },
+                { zone: filmUploadZone, input: filmFileInput, progress: filmProgressBar },
+                { zone: posterUploadZone, input: posterFileInput, progress: null },
+                { zone: ideaUploadZone, input: ideaFileInput, progress: ideaProgressBar },
+                { zone: projectUploadZone, input: projectPosterInput, progress: projectProgressBar }
+            ];
+
+            uploadZones.forEach(({ zone, input, progress }) => {
+                if (!zone) return;
+
+                // Click to open file dialog
+                zone.addEventListener('click', () => input.click());
+
+                // Drag and drop events
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zone.classList.add('dragover');
+                });
+
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('dragover');
+                });
+
+                zone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('dragover');
+
+                    const files = e.dataTransfer.files;
+                    handleFileSelection(input, files, progress);
+                });
+
+                // File input change
+                input.addEventListener('change', (e) => {
+                    handleFileSelection(input, e.target.files, progress);
+                });
+            });
+        }
+
+        // Handle file selection
+        function handleFileSelection(input, files, progressBar) {
+            if (files.length > 0) {
+                const file = files[0];
+                displayFilePreview(input, file);
+
+                if (progressBar) {
+                    simulateUploadProgress(progressBar);
+                }
+            }
+        }
+
+        // Display file preview
+        function displayFilePreview(input, file) {
+            const zone = input.closest('.upload-zone');
+            let preview = zone.querySelector('.file-preview');
+
+            if (!preview) {
+                preview = document.createElement('div');
+                preview.className = 'file-preview';
+                zone.appendChild(preview);
+            }
+
+            const fileIcon = file.type.startsWith('video/') ? 'fas fa-video' :
+                           file.type.startsWith('image/') ? 'fas fa-image' :
+                           'fas fa-file-alt';
+
+            preview.innerHTML = `
+                <div class="file-info">
+                    <i class="${fileIcon} file-icon"></i>
+                    <div class="file-details">
+                        <h4>${file.name}</h4>
+                        <p>${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                    </div>
+                </div>
+                <i class="fas fa-times file-remove" onclick="removeFile(this)"></i>
+            `;
+        }
+
+        // Remove file
+        function removeFile(element) {
+            const preview = element.closest('.file-preview');
+            const zone = preview.closest('.upload-zone');
+            const input = zone.querySelector('input[type="file"]');
+
+            preview.remove();
+            input.value = '';
+        }
+
+        // Simulate upload progress
+        function simulateUploadProgress(progressBar) {
+            const progressFill = progressBar.querySelector('.progress-fill');
+            let progress = 0;
+
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                }
+                progressFill.style.width = progress + '%';
+            }, 200);
+        }
+
+        // Form validation
+        function setupFormValidation() {
+            const inputs = document.querySelectorAll('.form-input, .form-textarea, .form-select');
+            inputs.forEach(input => {
+                input.addEventListener('input', updatePreview);
+                input.addEventListener('change', updatePreview);
+            });
+
+            // Team settings toggles
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const teamSettings = this.closest('.form-section').querySelector('.team-settings');
+                    if (this.checked) {
+                        teamSettings.style.display = 'block';
+                    } else {
+                        teamSettings.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // Update live preview
+        function updatePreview() {
+            const titleInput = document.getElementById(currentType + 'Title');
+            const genreSelect = document.getElementById(currentType + 'Genre');
+
+            if (titleInput && titleInput.value) {
+                previewTitle.textContent = titleInput.value;
+            } else {
+                previewTitle.textContent = 'Your Project Title';
+            }
+
+            if (genreSelect && genreSelect.value) {
+                previewGenre.textContent = genreSelect.value;
+            } else {
+                previewGenre.textContent = 'Genre';
+            }
+        }
+
+        // Load user info
+        function loadUserInfo() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Decode token to get user info (simplified)
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                document.getElementById('userAvatar').textContent = payload.name ? payload.name.charAt(0).toUpperCase() : 'U';
+                previewCreator.textContent = 'By ' + (payload.name || 'You');
+            } catch (e) {
+                console.error('Error decoding token');
+            }
+        }
+
+        // Submit form
+        submitBtn.addEventListener('click', async function() {
+            const formData = new FormData();
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                showError('Please log in to submit');
+                return;
+            }
+
+            // Collect form data based on current type
+            const title = document.getElementById(currentType + 'Title').value;
+            const description = document.getElementById(currentType + 'Description').value;
+            const genre = document.getElementById(currentType + 'Genre').value;
+            const visibility = document.getElementById(currentType + 'Visibility').value;
+            const tags = document.getElementById(currentType + 'Tags').value;
+            const collaboration = document.getElementById(currentType + 'Collaboration').checked;
+
+            if (!title || !description || !genre) {
+                showError('Please fill in all required fields');
+                return;
+            }
+
+            formData.append('title', title);
+            formData.append('description', description);
+            formData.append('genre', genre);
+            formData.append('visibility', visibility);
+            formData.append('tags', tags);
+
+            // Type-specific fields
+            if (currentType === 'script') {
+                const language = document.getElementById('scriptLanguage').value;
+                const file = document.getElementById('scriptFile').files[0];
+
+                formData.append('category', 'Script');
+                formData.append('language', language);
+                if (file) formData.append('file', file);
+
+            } else if (currentType === 'shortfilm') {
+                const duration = document.getElementById('filmDuration').value;
+                const trailer = document.getElementById('filmTrailer').value;
+                const video = document.getElementById('filmFile').files[0];
+                const poster = document.getElementById('posterFile').files[0];
+
+                formData.append('duration', duration);
+                if (trailer) formData.append('trailer', trailer);
+                if (video) formData.append('video', video);
+                if (poster) formData.append('thumbnail', poster);
+
+            } else if (currentType === 'idea') {
+                const language = document.getElementById('ideaLanguage').value;
+                const files = document.getElementById('ideaFiles').files;
+
+                formData.append('category', 'Idea');
+                formData.append('language', language);
+                for (let i = 0; i < files.length; i++) {
+                    formData.append('images', files[i]);
+                }
+
+            } else if (currentType === 'project') {
+                const category = document.getElementById('projectCategory').value;
+                const budget = document.getElementById('projectBudget').value;
+                const deadline = document.getElementById('projectDeadline').value;
+                const poster = document.getElementById('projectPoster').files[0];
+
+                formData.append('category', category);
+                if (budget) formData.append('budget', budget);
+                if (deadline) formData.append('deadline', deadline);
+                if (poster) formData.append('poster', poster);
+            }
+
+            // Team settings
+            if (collaboration) {
+                const teamSize = document.getElementById(currentType + 'TeamSize').value;
+                formData.append('teamSize', teamSize);
+
+                const roles = [];
+                document.querySelectorAll('#' + currentType + 'TeamSettings input[type="checkbox"]:checked').forEach(cb => {
+                    roles.push(cb.value);
+                });
+                formData.append('roles', JSON.stringify(roles));
+            }
+
+            // Submit
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+
+            try {
+                const endpoint = currentType === 'shortfilm' ? '/api/shortfilm/upload' :
+                               currentType === 'script' ? '/api/script/upload' :
+                               '/api/project/create'; // Assuming project endpoint exists
+
+                const response = await fetch('http://localhost:5000' + endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showSuccess();
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 2000);
+                } else {
+                    showError(result.msg || 'Upload failed');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+            } finally {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Show success message
+        function showSuccess() {
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        }
+
+        // Show error message
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+
+        // Utility functions
+        function getCurrentUser() {
+            const token = localStorage.getItem('token');
+            if (!token) return null;
+
+            try {
+                return JSON.parse(atob(token.split('.')[1]));
+            } catch (e) {
+                return null;
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+                

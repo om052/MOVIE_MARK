@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collaboration Requests - MovieMark</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: rgba(2, 6, 23, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h2 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-buttons a {
+            text-decoration: none;
+            color: #e2e8f0;
+            margin-left: 20px;
+            padding: 12px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-buttons a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #60a5fa;
+            color: #60a5fa;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(96, 165, 250, 0.2);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 50px;
+        }
+
+        .container h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+            background: linear-gradient(45deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            cursor: pointer;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .tab:hover::before {
+            left: 100%;
+        }
+
+        .tab.active {
+            background: linear-gradient(45deg, #60a5fa, #a78bfa);
+            color: white;
+            box-shadow: 0 5px 20px rgba(96, 165, 250, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Requests Grid */
+        .requests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .request-card {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .request-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .request-card:hover::before {
+            left: 100%;
+        }
+
+        .request-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+
+        .request-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #60a5fa, #a78bfa);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .user-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #60a5fa;
+        }
+
+        .user-role {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-accepted {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .request-message {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #60a5fa;
+            color: #cbd5f5;
+        }
+
+        .project-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 10px;
+        }
+
+        .project-info strong {
+            color: #94a3b8;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-accept {
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            color: white;
+        }
+
+        .btn-accept:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-reject {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-reject:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-send {
+            background: linear-gradient(45deg, #60a5fa, #a78bfa);
+            color: white;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-send:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(96, 165, 250, 0.4);
+        }
+
+        .btn-send:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-send.sending {
+            background: linear-gradient(45deg, #94a3b8, #64748b);
+        }
+
+        .btn-send.sending::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: button-loading-spinner 1s ease infinite;
+        }
+
+        @keyframes button-loading-spinner {
+            from { transform: rotate(0turn); }
+            to { transform: rotate(1turn); }
+        }
+
+        /* Success/Error Messages */
+        .message {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .message.success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Send Request Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            margin: 3% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 95%;
+            max-width: 600px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-content h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #60a5fa;
+            text-align: center;
+        }
+
+        .close {
+            float: right;
+            font-size: 32px;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: color 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .close:hover {
+            color: #ef4444;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #e2e8f0;
+            font-size: 16px;
+        }
+
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.8);
+            color: #e2e8f0;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #94a3b8;
+        }
+
+        .spinner {
+            border: 4px solid rgba(96, 165, 250, 0.1);
+            border-left: 4px solid #60a5fa;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #94a3b8;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #cbd5f5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 20px;
+            }
+
+            header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .nav-buttons a {
+                margin: 5px;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab {
+                flex: 1;
+                min-width: 120px;
+                text-align: center;
+            }
+
+            .requests-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .request-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .user-avatar {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+
+            .request-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .modal-content {
+                margin: 2% auto;
+                padding: 20px;
+                width: 98%;
+            }
+        }
+
+        /* Project Info Section */
+        .project-info-section {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .project-header {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .project-poster {
+            flex-shrink: 0;
+        }
+
+        .poster-placeholder {
+            width: 80px;
+            height: 120px;
+            background: linear-gradient(45deg, #60a5fa, #a78bfa);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+        }
+
+        .project-details h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #60a5fa;
+        }
+
+        .project-details p {
+            margin: 4px 0;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* Role Cards */
+        .role-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .role-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .role-card:hover {
+            border-color: #60a5fa;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(96, 165, 250, 0.2);
+        }
+
+        .role-card.selected {
+            background: linear-gradient(45deg, #60a5fa, #a78bfa);
+            border-color: #60a5fa;
+            color: white;
+        }
+
+        .role-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .role-card span {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Character Counter */
+        .char-count {
+            float: right;
+            font-size: 12px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        /* Attachment Fields */
+        .attachment-fields {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .attachment-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.8);
+            color: #e2e8f0;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .attachment-input:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+        }
+
+        .attachment-input::placeholder {
+            color: #64748b;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(30, 41, 59, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(96, 165, 250, 0.5);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(96, 165, 250, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>MovieMark</h2>
+        <div class="nav-buttons">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="scripts.html">Scripts</a>
+            <a href="watch.html">Watch Films</a>
+            <a href="profile.html">Profile</a>
+            <a href="logout.html">Logout</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>🤝 Collaboration Requests</h1>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('received')">Received Requests</button>
+            <button class="tab" onclick="showTab('sent')">Sent Requests</button>
+            <button class="tab" onclick="showTab('send')">Send Request</button>
+        </div>
+
+        <!-- Received Requests -->
+        <div id="received" class="tab-content active">
+            <div class="requests-grid" id="receivedRequests">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading received requests...
+                </div>
+            </div>
+        </div>
+
+        <!-- Sent Requests -->
+        <div id="sent" class="tab-content">
+            <div class="requests-grid" id="sentRequests">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading sent requests...
+                </div>
+            </div>
+        </div>
+
+        <!-- Send Request -->
+        <div id="send" class="tab-content">
+            <div class="requests-grid" id="availableProjects">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading available projects...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Send Request Modal -->
+    <div class="modal" id="sendRequestModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>🎬 Send Join Request</h2>
+
+            <!-- Project Info Section -->
+            <div class="project-info-section" id="projectInfoSection">
+                <div class="project-header">
+                    <div class="project-poster">
+                        <div class="poster-placeholder">🎭</div>
+                    </div>
+                    <div class="project-details">
+                        <h3 id="projectTitle">Loading...</h3>
+                        <p id="projectGenre">Loading...</p>
+                        <p id="projectCreator">By: Loading...</p>
+                        <p id="projectDescription">Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <form id="sendRequestForm">
+                <!-- Role Selection -->
+                <div class="form-group">
+                    <label>🎭 Select Your Role:</label>
+                    <div class="role-cards" id="roleCards">
+                        <div class="role-card" data-role="Actor">
+                            <div class="role-icon">🎭</div>
+                            <span>Actor</span>
+                        </div>
+                        <div class="role-card" data-role="Director">
+                            <div class="role-icon">🎬</div>
+                            <span>Director</span>
+                        </div>
+                        <div class="role-card" data-role="Writer">
+                            <div class="role-icon">✍️</div>
+                            <span>Writer</span>
+                        </div>
+                        <div class="role-card" data-role="Producer">
+                            <div class="role-icon">🎯</div>
+                            <span>Producer</span>
+                        </div>
+                        <div class="role-card" data-role="Cinematographer">
+                            <div class="role-icon">📹</div>
+                            <span>Cinematographer</span>
+                        </div>
+                        <div class="role-card" data-role="Editor">
+                            <div class="role-icon">✂️</div>
+                            <span>Editor</span>
+                        </div>
+                        <div class="role-card" data-role="Sound Designer">
+                            <div class="role-icon">🔊</div>
+                            <span>Sound Designer</span>
+                        </div>
+                        <div class="role-card" data-role="Other">
+                            <div class="role-icon">🎨</div>
+                            <span>Other</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="requestRole" required>
+                </div>
+
+                <!-- Message Box -->
+                <div class="form-group">
+                    <label>💬 Why should we accept you? <span class="char-count"><span id="charCount">0</span>/500</span></label>
+                    <textarea id="requestMessage" placeholder="Tell the project creator about your experience, why you're interested in this project, and what you can contribute..." required maxlength="500"></textarea>
+                </div>
+
+                <!-- Optional Attachments -->
+                <div class="form-group">
+                    <label>📎 Optional Attachments (Links):</label>
+                    <div class="attachment-fields">
+                        <input type="url" id="portfolioLink" placeholder="Portfolio/Website URL" class="attachment-input">
+                        <input type="url" id="instagramLink" placeholder="Instagram Profile" class="attachment-input">
+                        <input type="url" id="youtubeLink" placeholder="YouTube Channel" class="attachment-input">
+                        <input type="url" id="driveLink" placeholder="Google Drive/Resume" class="attachment-input">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-send">
+                    <span class="btn-text">🚀 Send Request</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem("token");
+        if (!token) {
+            window.location.href = "login.html";
+        }
+
+        let currentProjectId = null;
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadReceivedRequests();
+        });
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            // Load data for the selected tab
+            if (tabName === 'received') {
+                loadReceivedRequests();
+            } else if (tabName === 'sent') {
+                loadSentRequests();
+            } else if (tabName === 'send') {
+                loadAvailableProjects();
+            }
+        }
+
+        async function loadReceivedRequests() {
+            try {
+                const res = await fetch('http://localhost:3000/api/requests/received', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const requests = await res.json();
+                displayRequests(requests, 'received');
+            } catch (err) {
+                console.error('Error loading received requests:', err);
+                document.getElementById('receivedRequests').innerHTML = '<div class="loading">Error loading requests</div>';
+            }
+        }
+
+        async function loadSentRequests() {
+            try {
+                const res = await fetch('http://localhost:3000/api/requests/sent', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const requests = await res.json();
+                displayRequests(requests, 'sent');
+            } catch (err) {
+                console.error('Error loading sent requests:', err);
+                document.getElementById('sentRequests').innerHTML = '<div class="loading">Error loading requests</div>';
+            }
+        }
+
+        async function loadAvailableProjects() {
+            try {
+                const res = await fetch('http://localhost:3000/api/requests/projects', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const projects = await res.json();
+                displayAvailableProjects(projects);
+            } catch (err) {
+                console.error('Error loading projects:', err);
+                document.getElementById('availableProjects').innerHTML = '<div class="loading">Error loading projects</div>';
+            }
+        }
+
+        function displayRequests(requests, type) {
+            const containerId = type === 'received' ? 'receivedRequests' : 'sentRequests';
+            const container = document.getElementById(containerId);
+
+            if (requests.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No ${type} requests</h3>
+                        <p>${type === 'received' ? 'When someone wants to join your projects, their requests will appear here.' : 'Requests you\'ve sent to join projects will appear here.'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = requests.map(request => `
+                <div class="request-card">
+                    <div class="status-badge status-${request.status}">${request.status}</div>
+                    <div class="request-header">
+                        <div class="user-avatar">
+                            ${type === 'received' ? (request.sender.photo ? `<img src="http://localhost:3000/uploads/${request.sender.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : request.sender.name.charAt(0).toUpperCase()) : (request.receiver.photo ? `<img src="http://localhost:3000/uploads/${request.receiver.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : request.receiver.name.charAt(0).toUpperCase())}
+                        </div>
+                        <div class="user-info">
+                            <h3>${type === 'received' ? request.sender.name : request.receiver.name}</h3>
+                            <div class="user-role">${request.role}</div>
+                        </div>
+                    </div>
+                    <div class="request-message">${request.message}</div>
+                    <div class="project-info">
+                        <strong>Project:</strong> ${request.project.title}
+                    </div>
+                    ${type === 'received' && request.status === 'pending' ? `
+                        <div class="request-actions">
+                            <button class="btn btn-accept" onclick="acceptRequest('${request._id}')">Accept</button>
+                            <button class="btn btn-reject" onclick="rejectRequest('${request._id}')">Reject</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function displayAvailableProjects(projects) {
+            const container = document.getElementById('availableProjects');
+
+            if (projects.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No available projects</h3>
+                        <p>All projects either have your requests pending or you're already a collaborator.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = projects.map(project => `
+                <div class="request-card">
+                    <div class="request-header">
+                        <div class="user-avatar">📜</div>
+                        <div class="user-info">
+                            <h3>${project.title}</h3>
+                            <div class="user-role">${project.genre} • ${project.category}</div>
+                        </div>
+                    </div>
+                    <div class="request-message">${project.description || 'No description available.'}</div>
+                    <div class="project-info">
+                        <strong>Author:</strong> ${project.author}
+                    </div>
+                    <div class="request-actions">
+                        <button class="btn btn-send" onclick="openSendRequestModal('${project._id}')">Send Request</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openSendRequestModal(projectId) {
+            currentProjectId = projectId;
+            console.log('Opening send request modal for project:', projectId);
+            document.getElementById('sendRequestModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('sendRequestModal').classList.remove('active');
+            document.getElementById('sendRequestForm').reset();
+            currentProjectId = null;
+
+            // Remove any messages
+            const existingMessage = document.querySelector('.message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            // Reset button state
+            const submitBtn = document.querySelector('.btn-send');
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('sending');
+            submitBtn.textContent = 'Send Request';
+        }
+
+        // Role selection
+        document.getElementById('roleCards').addEventListener('click', (e) => {
+            if (e.target.closest('.role-card')) {
+                const roleCard = e.target.closest('.role-card');
+                const role = roleCard.dataset.role;
+
+                // Remove selected class from all cards
+                document.querySelectorAll('.role-card').forEach(card => card.classList.remove('selected'));
+
+                // Add selected class to clicked card
+                roleCard.classList.add('selected');
+
+                // Set hidden input value
+                document.getElementById('requestRole').value = role;
+            }
+        });
+
+        // Character counter
+        document.getElementById('requestMessage').addEventListener('input', (e) => {
+            const count = e.target.value.length;
+            document.getElementById('charCount').textContent = count;
+        });
+
+        // Form submission
+        document.getElementById('sendRequestForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const role = document.getElementById('requestRole').value;
+            const message = document.getElementById('requestMessage').value;
+            const portfolioLink = document.getElementById('portfolioLink').value;
+            const instagramLink = document.getElementById('instagramLink').value;
+            const youtubeLink = document.getElementById('youtubeLink').value;
+            const driveLink = document.getElementById('driveLink').value;
+
+            if (!role) {
+                showModalMessage('Please select a role.', 'error');
+                return;
+            }
+
+            if (!message.trim()) {
+                showModalMessage('Please write a message.', 'error');
+                return;
+            }
+
+            // Prepare attachments object
+            const attachments = {};
+            if (portfolioLink) attachments.portfolio = portfolioLink;
+            if (instagramLink) attachments.instagram = instagramLink;
+            if (youtubeLink) attachments.youtube = youtubeLink;
+            if (driveLink) attachments.drive = driveLink;
+
+            // Disable button and show loading
+            const submitBtn = document.querySelector('.btn-send');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('sending');
+            submitBtn.querySelector('.btn-text').textContent = 'Sending...';
+
+            try {
+                const res = await fetch('http://localhost:3000/api/requests/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        projectId: currentProjectId,
+                        role,
+                        message,
+                        attachments
+                    })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    showModalMessage('🎉 Request sent successfully! The project creator will review your application.', 'success');
+                    setTimeout(() => {
+                        closeModal();
+                        loadAvailableProjects(); // Refresh available projects
+                    }, 2000);
+                } else {
+                    showModalMessage(data.msg || 'Error sending request', 'error');
+                    // Re-enable button
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('sending');
+                    submitBtn.querySelector('.btn-text').textContent = '🚀 Send Request';
+                }
+            } catch (err) {
+                console.error('Error sending request:', err);
+                showModalMessage('Network error. Please try again.', 'error');
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('sending');
+                submitBtn.querySelector('.btn-text').textContent = '🚀 Send Request';
+            }
+        });
+
+        function showModalMessage(message, type) {
+            // Remove existing message
+            const existingMessage = document.querySelector('.modal-content .message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            // Create new message
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+
+            // Insert after close button
+            const closeBtn = document.querySelector('.modal-content .close');
+            closeBtn.parentNode.insertBefore(messageDiv, closeBtn.nextSibling);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.remove();
+                }
+            }, 5000);
+        }
+
+        async function acceptRequest(requestId) {
+            if (!confirm('Are you sure you want to accept this request? The user will be added to your project team and will have access to the project chat.')) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`http://localhost:3000/api/requests/${requestId}/accept`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    // Show success message
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'message success';
+                    successMessage.textContent = '✅ Request accepted! The user has been added to your project team and can now access the project chat.';
+                    document.querySelector('.container').insertBefore(successMessage, document.querySelector('.tabs'));
+
+                    // Remove message after delay
+                    setTimeout(() => {
+                        if (successMessage.parentNode) {
+                            successMessage.remove();
+                        }
+                    }, 5000);
+
+                    loadReceivedRequests(); // Refresh the list
+                } else {
+                    // Show error message
+                    const errorMessage = document.createElement('div');
+                    errorMessage.className = 'message error';
+                    errorMessage.textContent = '❌ ' + (data.msg || 'Error accepting request');
+                    document.querySelector('.container').insertBefore(errorMessage, document.querySelector('.tabs'));
+
+                    // Remove message after delay
+                    setTimeout(() => {
+                        if (errorMessage.parentNode) {
+                            errorMessage.remove();
+                        }
+                    }, 5000);
+                }
+            } catch (err) {
+                console.error('Error accepting request:', err);
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'message error';
+                errorMessage.textContent = '❌ Network error. Please try again.';
+                document.querySelector('.container').insertBefore(errorMessage, document.querySelector('.tabs'));
+
+                setTimeout(() => {
+                    if (errorMessage.parentNode) {
+                        errorMessage.remove();
+                    }
+                }, 5000);
+            }
+        }
+
+        async function rejectRequest(requestId) {
+            if (!confirm('Are you sure you want to reject this request? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`http://localhost:3000/api/requests/${requestId}/reject`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    // Show success message
+                    const successMessage = document.createElement('div');
+                    successMessage.className = 'message success';
+                    successMessage.textContent = '✅ Request rejected successfully.';
+                    document.querySelector('.container').insertBefore(successMessage, document.querySelector('.tabs'));
+
+                    // Remove message after delay
+                    setTimeout(() => {
+                        if (successMessage.parentNode) {
+                            successMessage.remove();
+                        }
+                    }, 5000);
+
+                    loadReceivedRequests(); // Refresh the list
+                } else {
+                    // Show error message
+                    const errorMessage = document.createElement('div');
+                    errorMessage.className = 'message error';
+                    errorMessage.textContent = '❌ ' + (data.msg || 'Error rejecting request');
+                    document.querySelector('.container').insertBefore(errorMessage, document.querySelector('.tabs'));
+
+                    // Remove message after delay
+                    setTimeout(() => {
+                        if (errorMessage.parentNode) {
+                            errorMessage.remove();
+                        }
+                    }, 5000);
+                }
+            } catch (err) {
+                console.error('Error rejecting request:', err);
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'message error';
+                errorMessage.textContent = '❌ Network error. Please try again.';
+                document.querySelector('.container').insertBefore(errorMessage, document.querySelector('.tabs'));
+
+                setTimeout(() => {
+                    if (errorMessage.parentNode) {
+                        errorMessage.remove();
+                    }
+                }, 5000);
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('sendRequestModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('sendRequestModal')) {
+                closeModal();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

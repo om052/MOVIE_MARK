@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Chatroom - MovieMark</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            background: #020617;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h2 {
+            color: #38bdf8;
+        }
+        .online-status {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #020617;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 70%;
+        }
+        .message.sent {
+            background: #38bdf8;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        .message.received {
+            background: #1e293b;
+        }
+        .message.system {
+            background: #7c3aed;
+            text-align: center;
+            max-width: 100%;
+        }
+        .message.pinned {
+            border-left: 4px solid #f59e0b;
+        }
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .sender {
+            font-weight: bold;
+        }
+        .timestamp {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .message-content {
+            word-wrap: break-word;
+        }
+        .message-actions {
+            display: none;
+            margin-top: 5px;
+        }
+        .message:hover .message-actions {
+            display: block;
+        }
+        .message-actions button {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .input-area {
+            background: #020617;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .input-area input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #38bdf8;
+            border-radius: 20px;
+            background: #0f172a;
+            color: white;
+            margin-right: 10px;
+        }
+        .input-area button {
+            padding: 10px 20px;
+            background: #38bdf8;
+            border: none;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+        }
+        .typing-indicator {
+            padding: 10px 20px;
+            font-style: italic;
+            color: #94a3b8;
+        }
+        .pinned-messages {
+            background: #020617;
+            padding: 10px;
+            border-bottom: 1px solid #38bdf8;
+        }
+        .pinned-messages h3 {
+            color: #f59e0b;
+        }
+        .search-bar {
+            padding: 10px 20px;
+            background: #020617;
+            border-bottom: 1px solid #38bdf8;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #38bdf8;
+            border-radius: 5px;
+            background: #0f172a;
+            color: white;
+        }
+        .file-preview {
+            max-width: 300px;
+            max-height: 200px;
+            border-radius: 10px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #020617;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+        }
+        .close {
+            float: right;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #38bdf8;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Project Chatroom</h2>
+        <div class="online-status">Online: <span id="online-count">0</span></div>
+    </div>
+    <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search messages...">
+    </div>
+    <div class="pinned-messages" id="pinned-messages" style="display: none;">
+        <h3>Pinned Messages</h3>
+        <div id="pinned-list"></div>
+    </div>
+    <div class="chat-container">
+        <div class="messages" id="messages"></div>
+        <div class="typing-indicator" id="typing-indicator" style="display: none;"></div>
+        <div class="input-area">
+            <input type="text" id="message-input" placeholder="Type a message...">
+            <input type="file" id="file-input" style="display: none;" accept="image/*,audio/*,.pdf,.doc,.docx,.txt">
+            <button onclick="document.getElementById('file-input').click()">📎</button>
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+    <div class="modal" id="file-modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="file-preview"></div>
+        </div>
+    </div>
+    <div class="notification" id="notification"></div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectId = urlParams.get('projectId');
+        const chatroomId = urlParams.get('chatroomId') || projectId; // Support both projectId and chatroomId
+        if (!chatroomId) {
+            alert('No chatroom selected');
+            window.location.href = 'dashboard.html';
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        const socket = io('http://localhost:3000', {
+            auth: { token }
+        });
+
+        const messagesDiv = document.getElementById('messages');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const fileInput = document.getElementById('file-input');
+        const searchInput = document.getElementById('search-input');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const onlineCount = document.getElementById('online-count');
+        const notification = document.getElementById('notification');
+        const pinnedMessages = document.getElementById('pinned-messages');
+        const pinnedList = document.getElementById('pinned-list');
+
+        let typingTimeout;
+        let currentUser = null;
+
+        // Load chat history
+        async function loadMessages() {
+            try {
+                const res = await fetch(`http://localhost:3000/api/chat/${chatroomId}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const messages = await res.json();
+                messages.forEach(displayMessage);
+                scrollToBottom();
+            } catch (err) {
+                console.error('Error loading messages:', err);
+            }
+        }
+
+        // Display message
+        function displayMessage(msg) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${msg.type === 'system' ? 'system' : (msg.sender._id === currentUser._id ? 'sent' : 'received')}`;
+            if (msg.pinned) messageDiv.classList.add('pinned');
+
+            const header = document.createElement('div');
+            header.className = 'message-header';
+
+            const sender = document.createElement('span');
+            sender.className = 'sender';
+            sender.textContent = msg.type === 'system' ? 'System' : msg.sender.name;
+
+            const timestamp = document.createElement('span');
+            timestamp.className = 'timestamp';
+            timestamp.textContent = new Date(msg.createdAt).toLocaleString();
+
+            header.appendChild(sender);
+            header.appendChild(timestamp);
+
+            const content = document.createElement('div');
+            content.className = 'message-content';
+
+            if (msg.messageType === 'text') {
+                content.textContent = msg.message;
+            } else if (msg.messageType === 'image') {
+                const img = document.createElement('img');
+                img.src = msg.fileUrl;
+                img.className = 'file-preview';
+                img.onclick = () => openModal(img.src, 'image');
+                content.appendChild(img);
+            } else if (msg.messageType === 'file') {
+                const link = document.createElement('a');
+                link.href = msg.fileUrl;
+                link.textContent = msg.fileName;
+                link.download = msg.fileName;
+                content.appendChild(link);
+            }
+
+            if (msg.edited) {
+                const edited = document.createElement('span');
+                edited.textContent = ' (edited)';
+                edited.style.fontSize = '12px';
+                edited.style.color = '#94a3b8';
+                content.appendChild(edited);
+            }
+
+            const actions = document.createElement('div');
+            actions.className = 'message-actions';
+            if (msg.sender._id === currentUser._id && msg.type !== 'system') {
+                const editBtn = document.createElement('button');
+                editBtn.textContent = 'Edit';
+                editBtn.onclick = () => editMessage(msg._id, msg.message);
+                actions.appendChild(editBtn);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.onclick = () => deleteMessage(msg._id);
+                actions.appendChild(deleteBtn);
+            }
+            if (msg.type !== 'system') {
+                const pinBtn = document.createElement('button');
+                pinBtn.textContent = msg.pinned ? 'Unpin' : 'Pin';
+                pinBtn.onclick = () => togglePin(msg._id, msg.pinned);
+                actions.appendChild(pinBtn);
+            }
+
+            messageDiv.appendChild(header);
+            messageDiv.appendChild(content);
+            messageDiv.appendChild(actions);
+
+            messagesDiv.appendChild(messageDiv);
+
+            if (msg.pinned) {
+                updatePinnedMessages();
+            }
+        }
+
+        // Send message
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message) {
+                socket.emit('sendMessage', { projectId: chatroomId, message, messageType: 'text' });
+                messageInput.value = '';
+                socket.emit('stopTyping', chatroomId);
+            }
+        }
+
+        // Send file
+        fileInput.onchange = () => {
+            const file = fileInput.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('projectId', chatroomId);
+
+                fetch('http://localhost:3000/api/chat/upload', {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${token}` },
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    socket.emit('sendMessage', {
+                        projectId: chatroomId,
+                        message: '',
+                        messageType: file.type.startsWith('image/') ? 'image' : 'file',
+                        fileUrl: data.fileUrl,
+                        fileName: file.name
+                    });
+                })
+                .catch(err => console.error('Upload error:', err));
+            }
+        };
+
+        // Edit message
+        function editMessage(messageId, currentMessage) {
+            const newMessage = prompt('Edit message:', currentMessage);
+            if (newMessage && newMessage !== currentMessage) {
+                fetch(`http://localhost:3000/api/chat/${messageId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ message: newMessage })
+                })
+                .then(res => res.json())
+                .then(updatedMsg => {
+                    // Update UI
+                    location.reload();
+                });
+            }
+        }
+
+        // Delete message
+        function deleteMessage(messageId) {
+            if (confirm('Delete this message?')) {
+                fetch(`http://localhost:3000/api/chat/${messageId}`, {
+                    method: 'DELETE',
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+                .then(() => {
+                    location.reload();
+                });
+            }
+        }
+
+        // Toggle pin
+        function togglePin(messageId, currentlyPinned) {
+            socket.emit('togglePin', { messageId, pinned: !currentlyPinned });
+        }
+
+        // Update pinned messages
+        function updatePinnedMessages() {
+            const pinned = document.querySelectorAll('.message.pinned');
+            pinnedList.innerHTML = '';
+            if (pinned.length > 0) {
+                pinnedMessages.style.display = 'block';
+                pinned.forEach(msg => {
+                    const clone = msg.cloneNode(true);
+                    clone.onclick = () => msg.scrollIntoView();
+                    pinnedList.appendChild(clone);
+                });
+            } else {
+                pinnedMessages.style.display = 'none';
+            }
+        }
+
+        // Search messages
+        searchInput.oninput = () => {
+            const query = searchInput.value.toLowerCase();
+            const messages = document.querySelectorAll('.message');
+            messages.forEach(msg => {
+                const text = msg.textContent.toLowerCase();
+                msg.style.display = text.includes(query) ? 'block' : 'none';
+            });
+        };
+
+        // Typing indicator
+        messageInput.oninput = () => {
+            socket.emit('typing', projectId);
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                socket.emit('stopTyping', projectId);
+            }, 1000);
+        };
+
+        // Scroll to bottom
+        function scrollToBottom() {
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // Show notification
+        function showNotification(text) {
+            notification.textContent = text;
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Modal functions
+        function openModal(content, type) {
+            const modal = document.getElementById('file-modal');
+            const preview = document.getElementById('file-preview');
+            if (type === 'image') {
+                preview.innerHTML = `<img src="${content}" style="max-width: 100%;">`;
+            }
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('file-modal').style.display = 'none';
+        }
+
+        // Socket events
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            socket.emit('joinProject', chatroomId);
+        });
+
+        socket.on('userJoined', (user) => {
+            displayMessage({
+                type: 'system',
+                message: `${user.name} joined the project`,
+                createdAt: new Date()
+            });
+        });
+
+        socket.on('userLeft', (user) => {
+            displayMessage({
+                type: 'system',
+                message: `${user.name} left the project`,
+                createdAt: new Date()
+            });
+        });
+
+        socket.on('message', (msg) => {
+            displayMessage(msg);
+            scrollToBottom();
+            showNotification('New message');
+        });
+
+        socket.on('messageEdited', (msg) => {
+            // Update message in UI
+            location.reload();
+        });
+
+        socket.on('messageDeleted', (messageId) => {
+            const msg = document.querySelector(`[data-id="${messageId}"]`);
+            if (msg) msg.remove();
+        });
+
+        socket.on('messagePinned', (msg) => {
+            const messageDiv = document.querySelector(`[data-id="${msg._id}"]`);
+            if (messageDiv) {
+                messageDiv.classList.toggle('pinned');
+                updatePinnedMessages();
+            }
+        });
+
+        socket.on('typing', (user) => {
+            typingIndicator.textContent = `${user.name} is typing...`;
+            typingIndicator.style.display = 'block';
+        });
+
+        socket.on('stopTyping', () => {
+            typingIndicator.style.display = 'none';
+        });
+
+        socket.on('onlineUsers', (count) => {
+            onlineCount.textContent = count;
+        });
+
+        // Event listeners
+        sendBtn.onclick = sendMessage;
+        messageInput.onkeypress = (e) => {
+            if (e.key === 'Enter') sendMessage();
+        };
+
+        // Get current user
+        fetch('http://localhost:3000/api/auth/me', {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(res => res.json())
+        .then(user => {
+            currentUser = user;
+            loadMessages();
+        })
+        .catch(err => {
+            console.error('Auth error:', err);
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

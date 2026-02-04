@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | MovieMark</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .register-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .register-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .register-subtitle {
+            color: #cbd5e1;
+            font-size: 1.1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .roles-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .roles-header {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .roles-header:hover {
+            border-color: #ffd700;
+        }
+
+        .roles-header span {
+            font-weight: 500;
+        }
+
+        .roles-arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .roles-section.active .roles-arrow {
+            transform: rotate(180deg);
+        }
+
+        .roles-list {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .roles-section.active .roles-list {
+            max-height: 200px;
+        }
+
+        .role-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .role-option:hover {
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .role-option input[type="checkbox"] {
+            margin-right: 0.5rem;
+            accent-color: #ffd700;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(45deg, #ffd700, #ff6b6b);
+            border: none;
+            border-radius: 50px;
+            color: #0f172a;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .auth-links {
+            text-align: center;
+        }
+
+        .auth-links a {
+            color: #ffd700;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .auth-links a:hover {
+            color: #ff6b6b;
+        }
+
+        .back-link {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #ffd700;
+        }
+
+        /* Floating Particles */
+        .particle {
+            position: absolute;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) { width: 10px; height: 10px; top: 20%; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 15px; height: 15px; top: 60%; left: 80%; animation-delay: 2s; }
+        .particle:nth-child(3) { width: 8px; height: 8px; top: 40%; left: 60%; animation-delay: 4s; }
+        .particle:nth-child(4) { width: 12px; height: 12px; top: 80%; left: 20%; animation-delay: 1s; }
+        .particle:nth-child(5) { width: 6px; height: 6px; top: 30%; left: 90%; animation-delay: 3s; }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .register-container {
+                margin: 2rem;
+                padding: 2rem;
+            }
+
+            .register-title {
+                font-size: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .back-link {
+                position: static;
+                display: block;
+                margin-bottom: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Home</a>
+
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+
+    <div class="register-container">
+        <div class="register-header">
+            <h1 class="register-title">Join MovieMark</h1>
+            <p class="register-subtitle">Create your account and start your filmmaking journey</p>
+        </div>
+
+        <form id="registerForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="name">Full Name</label>
+                    <input type="text" id="name" class="form-input" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Create a password" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="confirm">Confirm Password</label>
+                    <input type="password" id="confirm" class="form-input" placeholder="Confirm your password" required>
+                </div>
+            </div>
+
+            <div class="roles-section" id="rolesSection">
+                <div class="roles-header" onclick="toggleRoles()">
+                    <span>Select Your Roles</span>
+                    <i class="fas fa-chevron-down roles-arrow"></i>
+                </div>
+                <div class="roles-list">
+                    <label class="role-option">
+                        <input type="checkbox" value="Writer"> Writer
+                    </label>
+                    <label class="role-option">
+                        <input type="checkbox" value="Director"> Director
+                    </label>
+                    <label class="role-option">
+                        <input type="checkbox" value="Actor"> Actor
+                    </label>
+                    <label class="role-option">
+                        <input type="checkbox" value="Editor"> Editor
+                    </label>
+                    <label class="role-option">
+                        <input type="checkbox" value="Cinematographer"> Cinematographer
+                    </label>
+                    <label class="role-option">
+                        <input type="checkbox" value="Producer"> Producer
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn">Create Account</button>
+        </form>
+
+        <div class="auth-links">
+            <p>Already have an account? <a href="login.html">Sign in</a></p>
+        </div>
+    </div>
+
+    <script>
+        function toggleRoles() {
+            const section = document.getElementById('rolesSection');
+            section.classList.toggle('active');
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirm').value;
+
+            if (password !== confirm) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            const roles = [];
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => roles.push(cb.value));
+
+            try {
+                const res = await fetch('http://localhost:3000/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password, roles })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    alert('Registered successfully');
+                    window.location.href = 'login.html';
+                } else {
+                    alert(data.msg || 'Registration failed');
+                }
+            } catch (err) {
+                alert('Server not running. Start backend first!');
+            }
+        });
+    </script>
+</body>
+</html>
