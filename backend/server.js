@@ -12,6 +12,7 @@ const Script = require('./models/Script');
 const ShortFilm = require('./models/ShortFilm');
 const ChatMessage = require('./models/ChatMessage');
 const adminAuth = require('./middleware/admin');
+const path = require("path");
 
 const app = express();
 const server = http.createServer(app);
@@ -35,6 +36,11 @@ app.use("/api/profile", require("./routes/profile"));
 app.use("/api/chat", require("./routes/chat"));
 app.use("/api/shortfilm", require("./routes/shortfilm"));
 app.use("/api/requests", require("./routes/requests"));
+app.use(express.static(path.join(__dirname, "../frontend")));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/index.html"));
+});
 
 // test route
 app.get("/", (req, res) => {
